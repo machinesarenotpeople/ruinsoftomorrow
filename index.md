@@ -6,7 +6,16 @@
 
 <gradio-app src="https://machinesarenotpeople-ruinsoftomorrow.hf.space"></gradio-app>
 
-**_Ruins of Tomorrow_ is an app that projects the present into the ramshckles of hte future**
+
+<iframe
+	src="https://machinesarenotpeople-ruinsoftomorrow.hf.space"
+	frameborder="0"
+	width="850"
+	height="450"
+></iframe>
+
+
+**_Ruins of Tomorrow_ is an app that projects the present into the ramshackles of hte future**
 
 The work is intended to be shown as a series of 349 framed portraits on a wall, placed in the same formation as the seating in the Swedish parliament chamber [*plenissalen*](https://www.riksdagen.se/sv/sa-funkar-riksdagen/arbetet-i-riksdagen/vad-ar-vad-i-kammaren/). In front of the wall, a screen showing a latent walk video of generated parliament members turning into new parliament members.
 
