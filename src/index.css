@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Saira:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Saira", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Michroma", sans-serif;
+}
+
+body {
+  background-color: #000;
+  color: #fff;
+  font-family: var(--font-sans);
+}

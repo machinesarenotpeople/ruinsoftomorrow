@@ -1,0 +1,7 @@
+{
+  "name": "Ruins of Tomorrow",
+  "description": "",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
