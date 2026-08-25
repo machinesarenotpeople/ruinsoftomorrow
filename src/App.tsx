@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { Camera, Upload, Image as ImageIcon, Download, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GoogleGenAI } from "@google/genai";
 
 export default function App() {
   return <ImageEditor />;
@@ -43,46 +42,30 @@ function ImageEditor() {
       // Extract base64 data without the data:image/jpeg;base64, prefix
       const base64Data = selectedImage.split(',')[1];
       
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        throw new Error("GEMINI_API_KEY is missing. Please set it in your environment.");
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
-      
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                data: base64Data,
-                mimeType: selectedImageMimeType,
-              },
-            },
-            {
-              text: prompt,
-            },
-          ],
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          base64Data,
+          mimeType: selectedImageMimeType,
+          prompt,
+        }),
       });
 
-      let generatedImage = null;
-      if (response.candidates && response.candidates.length > 0) {
-        for (const part of response.candidates[0].content.parts) {
-          if (part.inlineData) {
-            const base64EncodeString = part.inlineData.data;
-            generatedImage = `data:${part.inlineData.mimeType || 'image/png'};base64,${base64EncodeString}`;
-            break;
-          }
-        }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `HTTP error! status: ${response.status}`);
       }
 
-      if (!generatedImage) {
-        throw new Error("No image returned from the model.");
+      const data = await response.json();
+      
+      if (!data.generatedImage) {
+        throw new Error("No image returned from the server.");
       }
 
-      setResultImage(generatedImage);
+      setResultImage(data.generatedImage);
       
     } catch (err: any) {
       console.error("Generation error:", err);
