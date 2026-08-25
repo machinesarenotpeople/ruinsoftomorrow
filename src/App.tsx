@@ -24,8 +24,40 @@ function ImageEditor() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
-      setSelectedImage(result);
-      setSelectedImageMimeType(file.type);
+      
+      const img = new Image();
+      img.onload = () => {
+        const MAX_SIZE = 1500;
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height && width > MAX_SIZE) {
+          height *= MAX_SIZE / width;
+          width = MAX_SIZE;
+        } else if (height > MAX_SIZE) {
+          width *= MAX_SIZE / height;
+          height = MAX_SIZE;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          setSelectedImage(result);
+          setSelectedImageMimeType(file.type);
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        
+        setSelectedImage(compressedDataUrl);
+        setSelectedImageMimeType('image/jpeg');
+      };
+      img.src = result;
+
       setResultImage(null);
       setError(null);
     };
