@@ -8,22 +8,30 @@ export const config = {
   },
 };
 
+const SYSTEM_PROMPT = "abandoned buildings, empty streetscapes, rusted steel, derelict, urban exploration, ruin, decrepit, dilapidated, deserted, broken windows, dark windows, burnt out, ramshackle, homeless shelter, burnt-out car, wreckage, decay, debris, ruined, ruined signs, overgrown, worn down, eroded, corrosion, deterioration, dirt, mud, wear and tear, gravel, litter, trash, 8k, photorealistic, charred, smashed windows, blown-out windows, warzone, burnt-out, collapsed roof, every wall is realistically grimed, boarded windows, condemned buildings, crumbling, collapsed building, peeling paint, exposed rebar, rusted pipes, shattered glass, oxidized metal, twisted iron, water stains, rotting wood, neglected, forsaken, weathering, reclaimed by nature, dead weeds, desolate, structural failure, gritty";
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  // Basic Origin Verification
+  const origin = req.headers.origin || req.headers.referer;
+  if (origin && !origin.includes('localhost') && !origin.includes('ruinsoftomorrow.com') && !origin.includes('vercel.app')) {
+     return res.status(403).json({ error: 'Forbidden: Invalid Origin' });
+  }
+
   try {
-    const { base64Data, mimeType, prompt } = req.body;
+    const { base64Data, mimeType } = req.body;
     
-    if (!base64Data || !mimeType || !prompt) {
+    if (!base64Data || !mimeType) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.error("Server configuration error: GEMINI_API_KEY is missing.");
-      return res.status(500).json({ error: 'Server configuration error: GEMINI_API_KEY is missing.' });
+      return res.status(500).json({ error: 'Server configuration error.' });
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -39,7 +47,7 @@ export default async function handler(req: any, res: any) {
             },
           },
           {
-            text: prompt,
+            text: SYSTEM_PROMPT,
           },
         ],
       },
@@ -63,6 +71,7 @@ export default async function handler(req: any, res: any) {
     res.status(200).json({ generatedImage });
   } catch (error: any) {
     console.error("API Error:", error);
-    res.status(500).json({ error: error.message || 'An error occurred during generation.' });
+    // Return a generic error message to the client to avoid leaking sensitive information
+    res.status(500).json({ error: 'An error occurred while generating the image. Please try again later.' });
   }
 }

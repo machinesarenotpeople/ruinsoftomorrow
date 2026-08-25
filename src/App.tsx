@@ -9,7 +9,6 @@ export default function App() {
 function ImageEditor() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImageMimeType, setSelectedImageMimeType] = useState<string | null>(null);
-  const [prompt, setPrompt] = useState("abandoned buildings, empty streetscapes, rusted steel, derelict, urban exploration, ruin, decrepit, dilapidated, deserted, broken windows, dark windows, burnt out, ramshackle, homeless shelter, burnt-out car, wreckage, decay, debris, ruined, ruined signs, overgrown, worn down, eroded, corrosion, deterioration, dirt, mud, wear and tear, gravel, litter, trash, 8k, photorealistic, charred, smashed windows, blown-out windows, warzone, burnt-out, collapsed roof, every wall is realistically grimed, boarded windows, condemned buildings, crumbling, collapsed building, peeling paint, exposed rebar, rusted pipes, shattered glass, oxidized metal, twisted iron, water stains, rotting wood, neglected, forsaken, weathering, reclaimed by nature, dead weeds, desolate, structural failure, gritty");
   const [isGenerating, setIsGenerating] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +81,6 @@ function ImageEditor() {
         body: JSON.stringify({
           base64Data,
           mimeType: selectedImageMimeType,
-          prompt,
         }),
       });
 
