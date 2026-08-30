@@ -12,7 +12,7 @@ function ImageEditor() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -23,13 +23,13 @@ function ImageEditor() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
-      
+
       const img = new Image();
       img.onload = () => {
         const MAX_SIZE = 1500;
         let width = img.width;
         let height = img.height;
-        
+
         if (width > height && width > MAX_SIZE) {
           height *= MAX_SIZE / width;
           width = MAX_SIZE;
@@ -42,16 +42,16 @@ function ImageEditor() {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        
+
         if (!ctx) {
           setSelectedImage(result);
           setSelectedImageMimeType(file.type);
           return;
         }
-        
+
         ctx.drawImage(img, 0, 0, width, height);
         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        
+
         setSelectedImage(compressedDataUrl);
         setSelectedImageMimeType('image/jpeg');
       };
@@ -65,14 +65,14 @@ function ImageEditor() {
 
   const handleGenerate = async () => {
     if (!selectedImage || !selectedImageMimeType) return;
-    
+
     setIsGenerating(true);
     setError(null);
-    
+
     try {
       // Extract base64 data without the data:image/jpeg;base64, prefix
       const base64Data = selectedImage.split(',')[1];
-      
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -90,13 +90,13 @@ function ImageEditor() {
       }
 
       const data = await response.json();
-      
+
       if (!data.generatedImage) {
         throw new Error("No image returned from the server.");
       }
 
       setResultImage(data.generatedImage);
-      
+
     } catch (err: any) {
       console.error("Generation error:", err);
       setError(err.message || "An error occurred during generation.");
@@ -109,7 +109,7 @@ function ImageEditor() {
     if (!resultImage) return;
     const a = document.createElement('a');
     a.href = resultImage;
-    a.download = `urban-decay-${Date.now()}.png`;
+    a.download = `ruins-of-tomorrow-${Date.now()}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -118,7 +118,7 @@ function ImageEditor() {
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-white/20 pb-20">
       <div className="max-w-4xl mx-auto p-6 sm:p-10 space-y-12">
-        
+
         <header className="space-y-4 pt-8">
           <h1 className="text-4xl sm:text-6xl font-display tracking-tighter leading-none uppercase">
             RUINS OF<br />TOMORROW
@@ -131,7 +131,7 @@ function ImageEditor() {
         <main className="space-y-10">
           {!selectedImage ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <button 
+              <button
                 onClick={() => cameraInputRef.current?.click()}
                 className="group flex flex-col items-center justify-center gap-6 p-10 border border-white/20 hover:border-white/50 hover:bg-white/5 transition-all aspect-square sm:aspect-auto sm:h-80"
               >
@@ -142,8 +142,8 @@ function ImageEditor() {
                   <p className="font-light text-xl tracking-wide uppercase font-display">Take Photo</p>
                 </div>
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => fileInputRef.current?.click()}
                 className="group flex flex-col items-center justify-center gap-6 p-10 border border-white/20 hover:border-white/50 hover:bg-white/5 transition-all aspect-square sm:aspect-auto sm:h-80"
               >
@@ -154,37 +154,37 @@ function ImageEditor() {
                   <p className="font-light text-xl tracking-wide uppercase font-display">Upload Photo</p>
                 </div>
               </button>
-              
-              <input 
-                type="file" 
-                accept="image/*" 
-                capture="environment" 
-                className="hidden" 
+
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
                 ref={cameraInputRef}
                 onChange={handleImageSelect}
               />
-              <input 
-                type="file" 
-                accept="image/*" 
-                className="hidden" 
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
                 ref={fileInputRef}
                 onChange={handleImageSelect}
               />
             </div>
           ) : (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-10"
             >
               <div className="relative overflow-hidden">
-                <img 
-                  src={selectedImage} 
-                  alt="Selected" 
+                <img
+                  src={selectedImage}
+                  alt="Selected"
                   className="w-full max-h-[60vh] object-contain"
                   referrerPolicy="no-referrer"
                 />
-                <button 
+                <button
                   onClick={() => {
                     setSelectedImage(null);
                     setResultImage(null);
@@ -195,7 +195,7 @@ function ImageEditor() {
                 </button>
               </div>
 
-              <button 
+              <button
                 onClick={handleGenerate}
                 disabled={isGenerating}
                 className="w-full bg-white text-black font-medium py-5 px-8 hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg tracking-wide uppercase font-display"
@@ -211,7 +211,7 @@ function ImageEditor() {
                   </>
                 )}
               </button>
-              
+
               {error && (
                 <div className="p-5 border border-white/30 bg-white/10 text-white text-sm font-light space-y-2">
                   <p className="font-medium">{error}</p>
@@ -237,20 +237,20 @@ function ImageEditor() {
       {/* Full Screen Result Modal */}
       <AnimatePresence>
         {resultImage && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black flex flex-col"
           >
             <header className="flex items-center justify-between p-6 absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent">
-              <button 
+              <button
                 onClick={() => setResultImage(null)}
                 className="w-12 h-12 border border-white/30 bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
-              <button 
+              <button
                 onClick={handleDownload}
                 className="flex items-center gap-3 bg-white text-black px-8 py-3 font-medium hover:bg-white/90 transition-colors tracking-wide text-sm uppercase font-display"
               >
@@ -258,14 +258,14 @@ function ImageEditor() {
                 <span>DOWNLOAD</span>
               </button>
             </header>
-            
+
             <div className="flex-1 flex items-center justify-center p-4 sm:p-12">
-              <motion.img 
+              <motion.img
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                src={resultImage} 
-                alt="Generated Result" 
+                src={resultImage}
+                alt="Generated Result"
                 className="max-w-full max-h-full object-contain rounded-sm"
                 referrerPolicy="no-referrer"
               />
